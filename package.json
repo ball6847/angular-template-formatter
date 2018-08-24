@@ -1,5 +1,5 @@
 {
-    "name": "angular-template-formatter",
+    "name": "@ball6847/angular-template-formatter",
     "displayName": "Angular template formatter",
     "description": "Auto format Angular html templates",
     "version": "0.0.9",
@@ -19,11 +19,12 @@
         "onLanguage:html"
     ],
     "main": "./out/src/extension",
+    "bin": "./out/cli.js",
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
+        "test": "node ./node_modules/vscode/bin/test",
+        "build": "webpack-cli -p --progress"
     },
     "contributes": {
         "configuration": {
@@ -49,19 +50,22 @@
         }
     },
     "devDependencies": {
-        "vscode": "^1.0.0",
-        "typescript": "^2.0.3",
-        "mocha": "^2.3.3",
+        "@types/commander": "2.9.0",
         "@types/jasmine": "^2.5.38",
         "@types/node": "6.0.46",
-        "@types/commander": "2.9.0",
         "commander": "2.9.0",
-        "jasmine": "^2.5.2"
+        "jasmine": "^2.5.2",
+        "mocha": "^2.3.3",
+        "ts-loader": "^4.5.0",
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "webpack": "^4.17.1",
+        "webpack-cli": "^3.1.0"
     },
     "dependencies": {
         "@angular/compiler": "4.1.1",
-        "zone.js": "0.8.4",
+        "@angular/core": "4.1.1",
         "rxjs": "^5.0",
-        "@angular/core": "4.1.1"
+        "zone.js": "0.8.4"
     }
 }
