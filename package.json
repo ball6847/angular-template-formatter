@@ -24,7 +24,8 @@
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
         "test": "node ./node_modules/vscode/bin/test",
-        "build": "webpack-cli -p --progress"
+        "build": "webpack-cli -p --progress",
+        "precommit": "lint-staged"
     },
     "contributes": {
         "configuration": {
