@@ -24,8 +24,7 @@
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
         "test": "node ./node_modules/vscode/bin/test",
-        "build": "webpack-cli -p --progress",
-        "precommit": "lint-staged"
+        "build": "webpack-cli -p --progress"
     },
     "contributes": {
         "configuration": {
@@ -77,5 +76,10 @@
             "prettier --write",
             "git add"
         ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     }
 }
