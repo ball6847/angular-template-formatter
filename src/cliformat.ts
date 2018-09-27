@@ -1,6 +1,6 @@
-import program from 'commander';
-import fs from 'fs';
-import path from 'path';
+import * as program from 'commander';
+import * as fs from 'fs';
+import * as path from 'path';
 import { format } from './prettyprint';
 
 program
@@ -23,8 +23,8 @@ program.args.forEach((file: string) => {
         console.log('processing', file);
     }
 
-    let source = fs.readFileSync(fileName).toString();
-    let pretty = format(source, indent, !useTabs, closeTagSameline);
+    const source = fs.readFileSync(fileName).toString();
+    const pretty = format(source, indent, !useTabs, closeTagSameline);
     if (pretty != source) {
         changed++;
     }
@@ -36,6 +36,6 @@ program.args.forEach((file: string) => {
 });
 if (inplace) {
     console.log(changed + ' file' + (changed == 1 ? '' : 's') + ' files changed');
-    let skipped = program.args.length - changed;
+    const skipped = program.args.length - changed;
     console.log(skipped + ' file' + (skipped == 1 ? '' : 's') + ' files unchanged');
 }

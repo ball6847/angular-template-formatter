@@ -28,7 +28,7 @@ export function format(
     const parser = new TemplateParser(config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null!, []);
     const htmlResult = htmlParser.parse(src, '', true);
 
-    let pretty: string[] = [];
+    const pretty: string[] = [];
     let indent = 0;
     let attrNewLines = false;
 
@@ -60,7 +60,7 @@ export function format(
         pre: true
     };
 
-    let getIndent = (i: number): string => {
+    const getIndent = (i: number): string => {
         if (useSpaces) {
             return new Array(i * indentation).fill(' ').join('');
         } else {
@@ -68,8 +68,15 @@ export function format(
         }
     };
 
-    let visitor: Visitor = {
-        visitElement: function(element) {
+    // detect doctype
+    const detectedDoctype = src.match(/^\s*<!DOCTYPE((.|\n|\r)*?)>/i);
+
+    if (detectedDoctype) {
+        pretty.push(detectedDoctype[0].trim());
+    }
+
+    const visitor: Visitor = {
+        visitElement(element) {
             if (pretty.length > 0) {
                 pretty.push('\n');
             }
@@ -96,7 +103,7 @@ export function format(
             }
             pretty.push('>');
             indent++;
-            let ctx = {
+            const ctx = {
                 inlineTextNode: false,
                 textNodeInlined: false,
                 skipFormattingChildren: skipFormattingChildren.hasOwnProperty(element.name)
@@ -115,38 +122,38 @@ export function format(
                 pretty.push(`</${element.name}>`);
             }
         },
-        visit: function(node: Node, context: any) {
+        visit(node: Node, context: any) {
             console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitAttribute: function(attribute: Attribute, context: any) {
-            let prefix = attrNewLines ? '\n' + getIndent(indent + 1) : ' ';
+        visitAttribute(attribute: Attribute, context: any) {
+            const prefix = attrNewLines ? '\n' + getIndent(indent + 1) : ' ';
             pretty.push(prefix + attribute.name);
             if (attribute.value.length) {
                 pretty.push(`="${attribute.value.trim()}"`);
             }
         },
-        visitComment: function(comment: Comment, context: any) {
+        visitComment(comment: Comment, context: any) {
             pretty.push('\n' + getIndent(indent) + '<!-- ' + comment.value.trim() + ' -->');
         },
-        visitExpansion: function(expansion: Expansion, context: any) {
+        visitExpansion(expansion: Expansion, context: any) {
             console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitExpansionCase: function(expansionCase: ExpansionCase, context: any) {
+        visitExpansionCase(expansionCase: ExpansionCase, context: any) {
             console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitText: function(text: Text, context: any) {
+        visitText(text: Text, context: any) {
             if (context.skipFormattingChildren) {
                 pretty.push(text.value);
                 return;
             }
-            let shouldInline =
+            const shouldInline =
                 context.inlineTextNode &&
                 text.value.trim().length < 40 &&
                 text.value.trim().length + pretty[pretty.length - 1].length < 140;
 
             context.textNodeInlined = shouldInline;
             if (text.value.trim().length > 0) {
-                let prefix = shouldInline ? '' : '\n' + getIndent(indent);
+                const prefix = shouldInline ? '' : '\n' + getIndent(indent);
                 pretty.push(prefix + text.value.trim());
             } else if (!shouldInline) {
                 pretty.push(
