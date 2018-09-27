@@ -15,6 +15,10 @@ import {
     Visitor
 } from '@angular/compiler';
 
+function formatElementName(name: string) {
+    return name.replace(/^:svg:/, '');
+}
+
 export function format(
     src: string,
     indentation: number = 4,
@@ -80,21 +84,8 @@ export function format(
             if (pretty.length > 0) {
                 pretty.push('\n');
             }
-            if (element.name.startsWith(':svg:')) {
-                pretty.push(getIndent(indent) + element.sourceSpan.toString());
-                indent++;
-                element.children.forEach(e => e.visit(visitor, {}));
-                indent--;
-                if (element.children.length > 0) {
-                    pretty.push('\n' + getIndent(indent));
-                } else if (element.sourceSpan.toString().endsWith('/>')) {
-                    return;
-                }
-                pretty.push(element.endSourceSpan!.toString());
-                return;
-            }
-            pretty.push(getIndent(indent) + '<' + element.name);
-            attrNewLines = element.attrs.length > 1 && element.name != 'link';
+            pretty.push(getIndent(indent) + '<' + formatElementName(element.name));
+            attrNewLines = element.attrs.length > 1 && element.name !== 'link';
             element.attrs.forEach(attr => {
                 attr.visit(visitor, {});
             });
@@ -108,7 +99,7 @@ export function format(
                 textNodeInlined: false,
                 skipFormattingChildren: skipFormattingChildren.hasOwnProperty(element.name)
             };
-            if (!attrNewLines && element.children.length == 1) {
+            if (!attrNewLines && element.children.length === 1) {
                 ctx.inlineTextNode = true;
             }
             element.children.forEach(element => {
@@ -119,7 +110,7 @@ export function format(
                 pretty.push('\n' + getIndent(indent));
             }
             if (!selfClosing.hasOwnProperty(element.name)) {
-                pretty.push(`</${element.name}>`);
+                pretty.push(`</${formatElementName(element.name)}>`);
             }
         },
         visit(node: Node, context: any) {
