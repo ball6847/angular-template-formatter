@@ -56,14 +56,25 @@
         "@types/jasmine": "^2.5.38",
         "@types/node": "6.0.46",
         "commander": "2.9.0",
+        "husky": "^1.0.1",
         "jasmine": "^2.5.2",
+        "lint-staged": "^7.3.0",
         "mocha": "^2.3.3",
+        "prettier": "^1.14.3",
         "rxjs": "^5.0",
         "ts-loader": "^4.5.0",
+        "tslint": "^5.11.0",
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
         "webpack": "^4.17.1",
         "webpack-cli": "^3.1.0",
         "zone.js": "0.8.4"
+    },
+    "lint-staged": {
+        "*.ts": [
+            "tslint --fix -p tsconfig.json",
+            "prettier --write",
+            "git add"
+        ]
     }
 }

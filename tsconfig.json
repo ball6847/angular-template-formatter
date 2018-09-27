@@ -6,6 +6,7 @@
         "noImplicitAny": true,
         "strictNullChecks": false,
         "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
         "lib": [
             "es6"
         ],

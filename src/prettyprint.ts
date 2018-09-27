@@ -1,44 +1,63 @@
-import { HtmlParser, I18NHtmlParser, Parser, Lexer, CompilerConfig, TemplateParser, DomElementSchemaRegistry, Visitor, Node, Attribute, Element, Expansion, Text, Comment, ExpansionCase } from '@angular/compiler'
+import {
+    Attribute,
+    Comment,
+    CompilerConfig,
+    DomElementSchemaRegistry,
+    Expansion,
+    ExpansionCase,
+    HtmlParser,
+    I18NHtmlParser,
+    Lexer,
+    Node,
+    Parser,
+    TemplateParser,
+    Text,
+    Visitor
+} from '@angular/compiler';
 
-export function format(src: string, indentation: number = 4, useSpaces: boolean = true, closeTagSameLine: boolean = false): string {
+export function format(
+    src: string,
+    indentation: number = 4,
+    useSpaces: boolean = true,
+    closeTagSameLine: boolean = false
+): string {
     const rawHtmlParser = new HtmlParser();
     const htmlParser = new I18NHtmlParser(rawHtmlParser);
     const expressionParser = new Parser(new Lexer());
     const config = new CompilerConfig();
-    const parser = new TemplateParser(
-        config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null!, []);
+    const parser = new TemplateParser(config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null!, []);
     const htmlResult = htmlParser.parse(src, '', true);
 
     let pretty: string[] = [];
     let indent = 0;
     let attrNewLines = false;
 
-    if(htmlResult.errors && htmlResult.errors.length > 0) {
+    if (htmlResult.errors && htmlResult.errors.length > 0) {
         return src;
     }
 
     const selfClosing = {
-        'area': true,
-        'base': true,
-        'br': true,
-        'col': true,
-        'command': true,
-        'embed': true,
-        'hr': true,
-        'img': true,
-        'input': true,
-        'keygen': true,
-        'link': true,
-        'meta': true,
-        'param': true,
-        'source': true,
-        'track': true,
-        'wbr': true,
+        area: true,
+        base: true,
+        br: true,
+        col: true,
+        command: true,
+        embed: true,
+        hr: true,
+        img: true,
+        input: true,
+        keygen: true,
+        link: true,
+        meta: true,
+        param: true,
+        source: true,
+        track: true,
+        wbr: true
     };
 
     const skipFormattingChildren = {
-        'style': true,
-        'pre': true,
+        style: true,
+        pre: true
     };
 
     let getIndent = (i: number): string => {
@@ -47,10 +66,10 @@ export function format(src: string, indentation: number = 4, useSpaces: boolean 
         } else {
             return new Array(i).fill('\t').join('');
         }
-    }
+    };
 
     let visitor: Visitor = {
-        visitElement: function (element) {
+        visitElement: function(element) {
             if (pretty.length > 0) {
                 pretty.push('\n');
             }
@@ -61,7 +80,7 @@ export function format(src: string, indentation: number = 4, useSpaces: boolean 
                 indent--;
                 if (element.children.length > 0) {
                     pretty.push('\n' + getIndent(indent));
-                } else if (element.sourceSpan.toString().endsWith("/>")) {
+                } else if (element.sourceSpan.toString().endsWith('/>')) {
                     return;
                 }
                 pretty.push(element.endSourceSpan!.toString());
@@ -80,7 +99,7 @@ export function format(src: string, indentation: number = 4, useSpaces: boolean 
             let ctx = {
                 inlineTextNode: false,
                 textNodeInlined: false,
-                skipFormattingChildren: skipFormattingChildren.hasOwnProperty(element.name),
+                skipFormattingChildren: skipFormattingChildren.hasOwnProperty(element.name)
             };
             if (!attrNewLines && element.children.length == 1) {
                 ctx.inlineTextNode = true;
@@ -96,31 +115,33 @@ export function format(src: string, indentation: number = 4, useSpaces: boolean 
                 pretty.push(`</${element.name}>`);
             }
         },
-        visit: function (node: Node, context: any) {
-            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED')
+        visit: function(node: Node, context: any) {
+            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitAttribute: function (attribute: Attribute, context: any) {
+        visitAttribute: function(attribute: Attribute, context: any) {
             let prefix = attrNewLines ? '\n' + getIndent(indent + 1) : ' ';
             pretty.push(prefix + attribute.name);
             if (attribute.value.length) {
                 pretty.push(`="${attribute.value.trim()}"`);
             }
         },
-        visitComment: function (comment: Comment, context: any) {
+        visitComment: function(comment: Comment, context: any) {
             pretty.push('\n' + getIndent(indent) + '<!-- ' + comment.value.trim() + ' -->');
         },
-        visitExpansion: function (expansion: Expansion, context: any) {
-            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED')
+        visitExpansion: function(expansion: Expansion, context: any) {
+            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitExpansionCase: function (expansionCase: ExpansionCase, context: any) {
-            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED')
+        visitExpansionCase: function(expansionCase: ExpansionCase, context: any) {
+            console.error('IF YOU SEE THIS THE PRETTY PRINTER NEEDS TO BE UPDATED');
         },
-        visitText: function (text: Text, context: any) {
+        visitText: function(text: Text, context: any) {
             if (context.skipFormattingChildren) {
                 pretty.push(text.value);
                 return;
             }
-            let shouldInline = context.inlineTextNode && text.value.trim().length < 40 &&
+            let shouldInline =
+                context.inlineTextNode &&
+                text.value.trim().length < 40 &&
                 text.value.trim().length + pretty[pretty.length - 1].length < 140;
 
             context.textNodeInlined = shouldInline;
@@ -128,14 +149,20 @@ export function format(src: string, indentation: number = 4, useSpaces: boolean 
                 let prefix = shouldInline ? '' : '\n' + getIndent(indent);
                 pretty.push(prefix + text.value.trim());
             } else if (!shouldInline) {
-                pretty.push(text.value.replace('\n', '').replace(/ /g, '').replace(/\t/g, '').replace(/\n+/,'\n'));
+                pretty.push(
+                    text.value
+                        .replace('\n', '')
+                        .replace(/ /g, '')
+                        .replace(/\t/g, '')
+                        .replace(/\n+/, '\n')
+                );
             }
         }
-    }
+    };
 
     htmlResult.rootNodes.forEach(node => {
         node.visit(visitor, {});
-    })
+    });
 
     return pretty.join('').trim() + '\n';
 }
